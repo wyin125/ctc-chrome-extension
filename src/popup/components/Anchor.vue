@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'A',
+  name: 'Anchor',
   props: {
     href: {
       type: String,
