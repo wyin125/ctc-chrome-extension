@@ -8,13 +8,14 @@
 
     <ellipsis-card
       title="Keywords"
-      description="Advertising, production, communications, portfolio, promotion, technology, concept, video, graphic design, layout, direction"
+      description="Advertising, production, communications, portfolio, promotion, technology, concept, video, graphic design, layout, direction, production, communications, portfolio, promotion, technology, concept"
       class="mt-12"
     ></ellipsis-card>
 
     <ellipsis-card
       title="Description"
-      description="As a leading worldwide provider of navigation devices and wearable technology, our focus is on developing, designing and supporting superior products."
+      description="As a leading worldwide provider of navigation devices and wearable technology, our focus is on developing, designing and supporting superior products. That makes us an engineering and technology company with a keen focus on recruiting talent in those fields. That makes us an engineering and technology company with a keen focus on recruiting talent in those fields."
+      max-lines="9"
       class="mt-12"
     ></ellipsis-card>
 
@@ -25,7 +26,7 @@
 
     <div class="text-gray-600 text-xl mt-10">URL</div>
     <div class="w-full shadow mt-1 p-2">
-      <div class="text-gray-600 break-all">
+      <div class="text-gray-600 text-sm break-all">
         https://www.linkedin.com/jobs/view/1759870210/
       </div>
     </div>
