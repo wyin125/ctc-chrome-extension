@@ -14,5 +14,11 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "permissions": ["tabs", "https://www.indeed.com/*"]
+  "permissions": ["tabs"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
 }
