@@ -57,9 +57,12 @@ export default {
     };
   },
   mounted() {
-    chrome.tabs.query({ lastFocusedWindow: true, active: true }, async tabs => {
+    chrome.tabs.query({ lastFocusedWindow: true, active: true }, tabs => {
       this.url = tabs[0].url;
 
+      chrome.tabs.sendMessage(tabs[0].id, 'getHtml', html => {
+        console.log('Html', html);
+      });
       // const page = await browser.newPage();
       // await page.goto(this.url);
       // const html = await page.evaluate(() => document.body.innerHTML);
