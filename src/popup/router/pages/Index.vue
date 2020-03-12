@@ -15,7 +15,7 @@
       <ellipsis-card title="Description" :description="description" :max-lines="9" class="mt-12"></ellipsis-card>
 
       <div class="mt-12 px-4 text-center">
-        <v-button class="w-full">Save to wishlist</v-button>
+        <v-button class="w-full text-xl">Save to wishlist</v-button>
       </div>
       <div class="text-center mt-4"><anchor>couchtocareer.com</anchor></div>
 
@@ -58,10 +58,10 @@ export default {
     };
   },
   created() {
-    // if (!localStorage.getItem('token')) {
-    //   this.$router.replace('/login');
-    //   return;
-    // }
+    if (!localStorage.getItem('token')) {
+      this.$router.replace('/login');
+      return;
+    }
 
     chrome.tabs.query({ lastFocusedWindow: true, active: true }, tabs => {
       this.url = tabs[0].url;

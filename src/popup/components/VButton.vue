@@ -1,5 +1,5 @@
 <template>
-  <button class="py-2 px-6 text-white bg-primary hover:bg-primary-dark text-xl focus:outline-none"><slot></slot></button>
+  <button class="py-2 px-6 shadow-lg text-white bg-primary hover:bg-primary-dark focus:outline-none"><slot></slot></button>
 </template>
 
 <script>
