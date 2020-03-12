@@ -5,7 +5,9 @@
       <div class="text-gray-600 text-xl font-normal mt-1">{{ company }}</div>
       <div class="text-gray-600 mt-2">{{ location }}</div>
 
-      <img v-if="logo" :src="logo" class="w-16 h-16 mt-4 rounded-sm" />
+      <div v-if="logo" class="w-16 h-16 mt-4 flex items-center">
+        <img :src="logo" class="w-100 rounded-sm" />
+      </div>
       <div v-else :src="logo" class="w-16 h-16 mt-4 bg-black rounded-sm" />
 
       <ellipsis-card title="Keywords" :description="keywords" class="mt-12"></ellipsis-card>
@@ -61,14 +63,33 @@ export default {
 
       chrome.tabs.sendMessage(tabs[0].id, 'getHtml', async html => {
         const $ = await cheerio.load(html);
-        this.title = $('#vjs-jobtitle').text();
-        this.company = $('#vjs-cn').text();
-        this.location = $('#vjs-loc')
-          .text()
-          .replace(' - ', '');
-        this.logo = $('#vjs-img-cmL').attr('src');
-        this.description = $('#vjs-desc').text();
-        this.descriptionHtml = $('#vjs-desc').html();
+
+        if (this.url.includes('indeed.com')) {
+          this.title = $('#vjs-jobtitle').text();
+          this.company = $('#vjs-cn').text();
+          this.location = $('#vjs-loc')
+            .text()
+            .replace(' - ', '');
+          this.logo = $('#vjs-img-cmL').attr('src');
+          this.description = $('#vjs-desc').text();
+          this.descriptionHtml = $('#vjs-desc').html();
+        } else if (this.url.includes('angel.co')) {
+          this.title = $('.header_ad038 h4').text();
+          this.company = $('.header_ad038 span').text();
+          this.location = $('.location_a70ea')
+            .first()
+            .text();
+          this.logo = $('.header_ad038 img').attr('src');
+          this.description = $('.description_3469f').text();
+          this.descriptionHtml = $('.description_3469f').html();
+        } else if (this.url.includes('linkedin.com')) {
+          this.title = $('.jobs-details-top-card__job-title').text();
+          this.company = $('.jobs-details-top-card__company-url').text();
+          this.location = $('.jobs-details-top-card__exact-location').text();
+          this.logo = $('.jobs-details-top-card__company-logo').attr('src');
+          this.description = $('.jobs-box__html-content').text();
+          this.descriptionHtml = $('.jobs-box__html-content').html();
+        }
 
         retext()
           .use(pos)
