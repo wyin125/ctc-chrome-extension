@@ -57,7 +57,12 @@ export default {
       url: '',
     };
   },
-  mounted() {
+  created() {
+    if (!localStorage.getItem('token')) {
+      this.$router.replace('/login');
+      return;
+    }
+
     chrome.tabs.query({ lastFocusedWindow: true, active: true }, tabs => {
       this.url = tabs[0].url;
 
