@@ -1,6 +1,9 @@
 module.exports = {
   theme: {
     extend: {
+      fontFamily: {
+        display: ['Gotham'],
+      },
       colors: {
         primary: {
           default: '#FAAC1E',

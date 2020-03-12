@@ -3,3 +3,8 @@
 @import 'tailwindcss/components';
 
 @import 'tailwindcss/utilities';
+
+@font-face {
+  font-family: 'Gotham';
+  src: url('src/fonts/gotham.otf') format('opentype');
+}

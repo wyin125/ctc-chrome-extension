@@ -54,7 +54,7 @@ const config = {
         },
       },
       {
-        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        test: /\.(woff(2)?|ttf|eot|svg|otf)(\?v=\d+\.\d+\.\d+)?$/,
         loader: 'file-loader',
         options: {
           name: '[name].[ext]',
@@ -73,6 +73,7 @@ const config = {
       filename: '[name].css',
     }),
     new CopyPlugin([
+      { from: 'fonts', to: 'fonts' },
       { from: 'icons', to: 'icons', ignore: ['icon.xcf'] },
       { from: 'popup/popup.html', to: 'popup/popup.html', transform: transformHtml },
       {

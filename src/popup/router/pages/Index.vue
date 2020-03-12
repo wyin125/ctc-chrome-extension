@@ -1,9 +1,9 @@
 <template>
   <div class="w-64 py-4 px-2">
     <template v-if="this.keywords">
-      <h1 class="text-gray-600 text-xl font-medium">{{ title }}</h1>
-      <div class="text-gray-600 text-xl font-normal mt-1">{{ company }}</div>
-      <div class="text-gray-600 mt-2">{{ location }}</div>
+      <h1 class="text-xl font-medium">{{ title }}</h1>
+      <div class="text-xl font-normal mt-1">{{ company }}</div>
+      <div class="mt-2">{{ location }}</div>
 
       <div v-if="logo" class="w-16 h-16 mt-4 flex items-center">
         <img :src="logo" class="w-100 rounded-sm" />
@@ -19,9 +19,9 @@
       </div>
       <div class="text-center mt-4"><anchor>couchtocareer.com</anchor></div>
 
-      <div class="text-gray-600 text-xl mt-10">URL</div>
+      <div class="text-xl mt-10">URL</div>
       <div class="w-full shadow mt-1 p-2">
-        <div class="text-gray-600 text-sm break-all">
+        <div class="text-sm break-all">
           {{ url }}
         </div>
       </div>
@@ -58,10 +58,10 @@ export default {
     };
   },
   created() {
-    if (!localStorage.getItem('token')) {
-      this.$router.replace('/login');
-      return;
-    }
+    // if (!localStorage.getItem('token')) {
+    //   this.$router.replace('/login');
+    //   return;
+    // }
 
     chrome.tabs.query({ lastFocusedWindow: true, active: true }, tabs => {
       this.url = tabs[0].url;
