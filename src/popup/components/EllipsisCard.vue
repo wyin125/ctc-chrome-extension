@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="text-gray-600 text-xl mt-12">{{ title }}</div>
+    <div class="text-xl mt-12">{{ title }}</div>
     <div class="w-full shadow mt-1 p-2">
-      <div class="description text-gray-600 text-sm" :style="{ '-webkit-line-clamp': lineClamp }">
+      <div class="description text-sm" :style="{ '-webkit-line-clamp': lineClamp }">
         {{ description }}
       </div>
       <div class="mt-3 text-center">
