@@ -72,6 +72,7 @@ export default {
         localStorage.setItem('token', data.token);
         localStorage.setItem('id', data.user.id);
         localStorage.setItem('email', data.email);
+        this.$router.replace('/');
       } catch (e) {
         this.error = 'Incorrect Credentials';
       }
