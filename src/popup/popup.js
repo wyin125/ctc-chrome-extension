@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import App from './App';
 import store from '../store';
 import router from './router';
+import 'vue-loading-overlay/dist/vue-loading.css';
 import '../../output.css';
 
 global.browser = require('webextension-polyfill');
