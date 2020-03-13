@@ -1,10 +1,11 @@
 <template>
   <div class="w-64 py-10 px-6">
-    <loading :active.sync="loading" :is-full-page="true"></loading>
+    <loading :active.sync="loading" :is-full-page="true" :width="45" :height="45" color="#FAAC1E"></loading>
     <div class="text-xl font-bold text-center mb-10">Login</div>
     <div class="text-danger text-sm text-center mb-4" v-if="error">{{ this.error }}</div>
     <input type="text" v-model="email" placeholder="Email" class="w-full text-sm py-3 px-4 border border-secondary-light placeholder-secondary-light focus:outline-none" />
     <div class="mt-2 text-danger text-sm" v-if="validateField('email')">Required</div>
+    <div class="mt-2 text-danger text-sm" v-if="validateField('email', 'email')">Invalid email address</div>
     <input
       type="password"
       v-model="password"
@@ -21,7 +22,7 @@
 
 <script>
 import { validationMixin } from 'vuelidate';
-import { required } from 'vuelidate/lib/validators';
+import { required, email } from 'vuelidate/lib/validators';
 import Loading from 'vue-loading-overlay';
 import axios from 'axios';
 import VButton from '../../components/VButton';
@@ -46,6 +47,7 @@ export default {
   validations: {
     email: {
       required,
+      email,
     },
     password: {
       required,
@@ -66,6 +68,7 @@ export default {
       try {
         await new Promise(resolve => setTimeout(resolve, 1500));
         const { data } = await axios.post(`${API_URL}/authentication/login`, { email: this.email, password: this.password });
+
         localStorage.setItem('token', data.token);
         localStorage.setItem('id', data.user.id);
         localStorage.setItem('email', data.email);
@@ -74,8 +77,8 @@ export default {
       }
       this.loading = false;
     },
-    validateField(field) {
-      return !this.$v[field].required && this.$v[field].$dirty;
+    validateField(field, rule = 'required') {
+      return !this.$v[field][rule] && this.$v[field].$dirty;
     },
   },
 };
