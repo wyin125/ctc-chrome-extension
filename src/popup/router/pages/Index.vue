@@ -32,14 +32,12 @@
 
 <script>
 import cheerio from 'cheerio';
-import retext from 'retext';
-import pos from 'retext-pos';
-import keywords from 'retext-keywords';
-import toString from 'nlcst-to-string';
+import axios from 'axios';
 import VButton from '../../components/VButton';
 import Anchor from '../../components/Anchor';
 import EllipsisCard from '../../components/EllipsisCard';
 import RiseLoader from 'vue-spinner/src/RiseLoader';
+import { API_URL } from '../../constants';
 
 export default {
   components: {
@@ -58,7 +56,7 @@ export default {
       description: '',
       descriptionHtml: '',
       url: '',
-      loading: false,
+      loading: true,
     };
   },
   created() {
@@ -100,18 +98,11 @@ export default {
           this.descriptionHtml = $('.jobs-box__html-content').html();
         }
 
-        this.loading = true;
-
-        // retext()
-        //   .use(pos)
-        //   .use(keywords)
-        //   .process(this.description, (err, file) => {
-        //     if (err) {
-        //       return;
-        //     }
-
-        //     this.keywords = file.data.keyphrases.map(phrase => phrase.matches[0].nodes.map(value => toString(value)).join('')).join(', ');
-        //   });
+        try {
+          const { data } = await axios.post(`${API_URL}/algorithm/keyword-extractor`, { text: this.description });
+          this.keywords = data.join(', ');
+          this.loading = false;
+        } catch (e) {}
       });
     });
   },
