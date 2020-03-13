@@ -1,6 +1,7 @@
 <template>
   <div class="w-64 py-4 px-2">
-    <template v-if="this.keywords">
+    <rise-loader :loading="loading" color="#FAAC1E" class="my-10"></rise-loader>
+    <template v-if="!loading">
       <h1 class="text-xl font-medium">{{ title }}</h1>
       <div class="text-xl font-normal mt-1">{{ company }}</div>
       <div class="mt-2">{{ location }}</div>
@@ -38,9 +39,11 @@ import toString from 'nlcst-to-string';
 import VButton from '../../components/VButton';
 import Anchor from '../../components/Anchor';
 import EllipsisCard from '../../components/EllipsisCard';
+import RiseLoader from 'vue-spinner/src/RiseLoader';
 
 export default {
   components: {
+    RiseLoader,
     VButton,
     Anchor,
     EllipsisCard,
@@ -55,6 +58,7 @@ export default {
       description: '',
       descriptionHtml: '',
       url: '',
+      loading: false,
     };
   },
   created() {
@@ -96,16 +100,18 @@ export default {
           this.descriptionHtml = $('.jobs-box__html-content').html();
         }
 
-        retext()
-          .use(pos)
-          .use(keywords)
-          .process(this.description, (err, file) => {
-            if (err) {
-              return;
-            }
+        this.loading = true;
 
-            this.keywords = file.data.keyphrases.map(phrase => phrase.matches[0].nodes.map(value => toString(value)).join('')).join(', ');
-          });
+        // retext()
+        //   .use(pos)
+        //   .use(keywords)
+        //   .process(this.description, (err, file) => {
+        //     if (err) {
+        //       return;
+        //     }
+
+        //     this.keywords = file.data.keyphrases.map(phrase => phrase.matches[0].nodes.map(value => toString(value)).join('')).join(', ');
+        //   });
       });
     });
   },
