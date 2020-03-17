@@ -1,6 +1,7 @@
 <template>
   <div class="w-64 py-4 px-2">
     <rise-loader :loading="loading" color="#FAAC1E" class="my-10"></rise-loader>
+    <loading :active.sync="saving" :is-full-page="true" :width="45" :height="45" color="#FAAC1E"></loading>
     <template v-if="!loading">
       <h1 class="text-xl font-medium">{{ title }}</h1>
       <div class="text-xl font-normal mt-1">{{ company }}</div>
@@ -16,7 +17,7 @@
       <ellipsis-card title="Description" :description="description" :max-lines="9" class="mt-12"></ellipsis-card>
 
       <div class="mt-12 px-4 text-center">
-        <v-button class="w-full text-xl">Save to wishlist</v-button>
+        <v-button class="w-full text-xl" @click="save">Save to wishlist</v-button>
       </div>
       <div class="text-center mt-4"><anchor>couchtocareer.com</anchor></div>
 
@@ -33,6 +34,7 @@
 <script>
 import cheerio from 'cheerio';
 import axios from 'axios';
+import Loading from 'vue-loading-overlay';
 import VButton from '../../components/VButton';
 import Anchor from '../../components/Anchor';
 import EllipsisCard from '../../components/EllipsisCard';
@@ -42,6 +44,7 @@ import { API_URL } from '../../constants';
 export default {
   components: {
     RiseLoader,
+    Loading,
     VButton,
     Anchor,
     EllipsisCard,
@@ -57,6 +60,7 @@ export default {
       descriptionHtml: '',
       url: '',
       loading: true,
+      saving: false,
     };
   },
   created() {
@@ -99,12 +103,32 @@ export default {
         }
 
         try {
-          const { data } = await axios.post(`${API_URL}/algorithm/keyword-extractor`, { text: this.description });
+          const { data } = await axios.post(`${API_URL}/algorithm/keyword-extractor`, { text: `${this.title}, ${this.description}` });
           this.keywords = data.join(', ');
           this.loading = false;
         } catch (e) {}
       });
     });
+  },
+  methods: {
+    async save() {
+      this.saving = true;
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        await axios.post(`${API_URL}/jobs/`, {
+          title: this.title,
+          company: this.company,
+          location: this.location,
+          logo: this.logo,
+          description: this.description,
+          description_html: this.descriptionHtml,
+          keywords: this.keywords,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+      this.saving = false;
+    },
   },
 };
 </script>
