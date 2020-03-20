@@ -19,7 +19,7 @@
       <div class="mt-12 px-4 text-center">
         <v-button class="w-full text-xl" @click="save">Save to wishlist</v-button>
       </div>
-      <div class="text-center mt-4"><anchor>couchtocareer.com</anchor></div>
+      <div class="text-center mt-4"><anchor :href="WEB_APP_URL">couchtocareer.com</anchor></div>
 
       <div class="text-xl mt-10">URL</div>
       <div class="w-full shadow mt-1 p-2">
@@ -39,7 +39,7 @@ import VButton from '../../components/VButton';
 import Anchor from '../../components/Anchor';
 import EllipsisCard from '../../components/EllipsisCard';
 import RiseLoader from 'vue-spinner/src/RiseLoader';
-import { API_URL } from '../../constants';
+import { API_URL, WEB_APP_URL } from '../../constants';
 
 export default {
   components: {
@@ -61,6 +61,7 @@ export default {
       url: '',
       loading: true,
       saving: false,
+      WEB_APP_URL,
     };
   },
   created() {
