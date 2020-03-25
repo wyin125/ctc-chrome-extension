@@ -16,6 +16,8 @@
 
       <ellipsis-card title="Description" :description="description" :max-lines="9" class="mt-12"></ellipsis-card>
 
+      <vue-select :options="positions"></vue-select>
+
       <div class="mt-12 px-4 text-center">
         <v-button class="w-full text-xl" @click="save">Save to wishlist</v-button>
       </div>
@@ -34,6 +36,7 @@
 <script>
 import cheerio from 'cheerio';
 import axios from 'axios';
+import VueSelect from 'vue-select';
 import Loading from 'vue-loading-overlay';
 import VButton from '../../components/VButton';
 import Anchor from '../../components/Anchor';
@@ -48,6 +51,7 @@ export default {
     VButton,
     Anchor,
     EllipsisCard,
+    VueSelect,
   },
   data() {
     return {
@@ -59,6 +63,7 @@ export default {
       description: '',
       descriptionHtml: '',
       url: '',
+      positions: [],
       loading: true,
       saving: false,
       WEB_APP_URL,
@@ -82,7 +87,7 @@ export default {
           this.location = $('#vjs-loc')
             .text()
             .replace(' - ', '');
-          this.logo = $('#vjs-img-cmL').attr('src');
+          this.logo = $('.vjs-JobInfoHeader-logo').attr('src');
           this.description = $('#vjs-desc').text();
           this.descriptionHtml = $('#vjs-desc').html();
         } else if (this.url.includes('angel.co')) {
@@ -104,8 +109,12 @@ export default {
         }
 
         try {
-          const { data } = await axios.post(`${API_URL}/algorithm/keyword-extractor`, { text: `${this.title}, ${this.description}` });
-          this.keywords = data.join(', ');
+          const [{ data: keywords }, { data: positions }] = await Promise.all([
+            axios.post(`${API_URL}/algorithm/keyword-extractor`, { text: `${this.title}, ${this.description}` }),
+            axios.get(`${API_URL}/positions/`),
+          ]);
+          this.keywords = keywords.join(', ');
+          this.positions = positions;
           this.loading = false;
         } catch (e) {}
       });
