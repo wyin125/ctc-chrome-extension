@@ -17,7 +17,8 @@
       <ellipsis-card title="Description" :description="description" :max-lines="9" class="mt-12"></ellipsis-card>
 
       <div class="text-xl mt-12">Position</div>
-      <vue-select :options="positions" label="name" class="mt-1"></vue-select>
+      <vue-select v-model="position" :options="positions" label="name" class="mt-1"></vue-select>
+      <div class="mt-2 text-danger text-sm" v-if="!$v.position.required && $v.position.$dirty">Required</div>
 
       <div class="mt-12 px-4 text-center">
         <v-button class="w-full text-xl" @click="save">Save to wishlist</v-button>
@@ -39,6 +40,8 @@ import cheerio from 'cheerio';
 import axios from 'axios';
 import VueSelect from 'vue-select';
 import Loading from 'vue-loading-overlay';
+import { validationMixin } from 'vuelidate';
+import { required } from 'vuelidate/lib/validators';
 import VButton from '../../components/VButton';
 import Anchor from '../../components/Anchor';
 import EllipsisCard from '../../components/EllipsisCard';
@@ -46,6 +49,7 @@ import RiseLoader from 'vue-spinner/src/RiseLoader';
 import { API_URL, WEB_APP_URL } from '../../constants';
 
 export default {
+  mixins: [validationMixin],
   components: {
     RiseLoader,
     Loading,
@@ -64,11 +68,17 @@ export default {
       description: '',
       descriptionHtml: '',
       url: '',
+      position: null,
       positions: [],
       loading: true,
       saving: false,
       WEB_APP_URL,
     };
+  },
+  validations: {
+    position: {
+      required,
+    },
   },
   created() {
     if (!localStorage.getItem('token')) {
@@ -123,6 +133,11 @@ export default {
   },
   methods: {
     async save() {
+      this.$v.$touch();
+      if (this.$v.$invalid) {
+        return;
+      }
+
       this.saving = true;
       try {
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -134,6 +149,7 @@ export default {
           description: this.description,
           description_html: this.descriptionHtml,
           keywords: this.keywords,
+          position: this.position.id,
         });
       } catch (e) {
         console.log(e);
@@ -149,5 +165,11 @@ export default {
 .vs__dropdown-menu {
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16);
   border: none !important;
+  color: #707070 !important;
+  font-size: 0.875rem !important;
+}
+
+.vs__selected {
+  color: #707070 !important;
 }
 </style>
