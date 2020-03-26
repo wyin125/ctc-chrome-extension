@@ -16,7 +16,8 @@
 
       <ellipsis-card title="Description" :description="description" :max-lines="9" class="mt-12"></ellipsis-card>
 
-      <vue-select :options="positions"></vue-select>
+      <div class="text-xl mt-12">Position</div>
+      <vue-select :options="positions" label="name" class="mt-1"></vue-select>
 
       <div class="mt-12 px-4 text-center">
         <v-button class="w-full text-xl" @click="save">Save to wishlist</v-button>
@@ -142,3 +143,5 @@ export default {
   },
 };
 </script>
+
+<style lang="scss"></style>
