@@ -144,4 +144,10 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.vs__dropdown-toggle,
+.vs__dropdown-menu {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16);
+  border: none !important;
+}
+</style>
