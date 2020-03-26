@@ -17,7 +17,9 @@
       <ellipsis-card title="Description" :description="description" :max-lines="9" class="mt-12"></ellipsis-card>
 
       <div class="text-xl mt-12">Position</div>
-      <vue-select v-model="position" :options="positions" label="name" class="mt-1"></vue-select>
+      <vue-select v-model="position" :options="positions" label="name" class="mt-1">
+        <div slot="no-options" class="py-2 px-4">No matching positions. Please add positions first in Couch to Career website.</div>
+      </vue-select>
       <div class="mt-2 text-danger text-sm" v-if="!$v.position.required && $v.position.$dirty">Required</div>
 
       <div class="mt-12 px-4 text-center">
