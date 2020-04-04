@@ -22,17 +22,25 @@
       </vue-select>
       <div class="mt-2 text-danger text-sm" v-if="!$v.position.required && $v.position.$dirty">Required</div>
 
-      <div class="mt-12 px-4 text-center">
-        <v-button class="w-full text-xl" @click="save">Save to wishlist</v-button>
-      </div>
-      <div class="text-center mt-4"><anchor @click="openWebApp">couchtocareer.com</anchor></div>
-
       <div class="text-xl mt-10">URL</div>
       <div class="w-full shadow mt-1 p-2">
         <div class="text-sm truncate">
           {{ url }}
         </div>
       </div>
+
+      <div class="mt-2 flex">
+        <v-button varient="secondary" class="text-sm flex-1" v-clipboard:copy="url">Copy</v-button>
+        <v-button varient="secondary" class="text-sm ml-2">
+          <i class="fas fa-paper-plane"></i>
+          <font-awesome-icon @click="handleClick" icon="paper-plane"></font-awesome-icon>
+        </v-button>
+      </div>
+
+      <div class="mt-12 px-4 text-center">
+        <v-button class="w-full text-xl" @click="save">Save to wishlist</v-button>
+      </div>
+      <div class="text-center mt-4"><anchor @click="openWebApp">couchtocareer.com</anchor></div>
     </template>
   </div>
 </template>
