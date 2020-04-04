@@ -25,11 +25,11 @@
       <div class="mt-12 px-4 text-center">
         <v-button class="w-full text-xl" @click="save">Save to wishlist</v-button>
       </div>
-      <div class="text-center mt-4"><anchor :href="WEB_APP_URL">couchtocareer.com</anchor></div>
+      <div class="text-center mt-4"><anchor @click="openWebApp">couchtocareer.com</anchor></div>
 
       <div class="text-xl mt-10">URL</div>
       <div class="w-full shadow mt-1 p-2">
-        <div class="text-sm break-all">
+        <div class="text-sm truncate">
           {{ url }}
         </div>
       </div>
@@ -74,7 +74,6 @@ export default {
       positions: [],
       loading: true,
       saving: false,
-      WEB_APP_URL,
     };
   },
   validations: {
@@ -157,6 +156,9 @@ export default {
         console.log(e);
       }
       this.saving = false;
+    },
+    openWebApp() {
+      chrome.tabs.create({ url: WEB_APP_URL });
     },
   },
 };
