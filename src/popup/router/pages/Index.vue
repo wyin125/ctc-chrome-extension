@@ -17,10 +17,20 @@
       <ellipsis-card title="Description" :description="description" :max-lines="9" class="mt-12"></ellipsis-card>
 
       <div class="text-xl mt-12">Position</div>
-      <vue-select v-model="position" :options="positions" label="name" class="mt-1">
-        <div slot="no-options" class="py-2 px-4">No matching positions. Please add positions first in Couch to Career website.</div>
-      </vue-select>
-      <div class="mt-2 text-danger text-sm" v-if="!$v.position.required && $v.position.$dirty">Required</div>
+      <vue-autosuggest
+        :suggestions="[{ data: filteredPositions }]"
+        :get-suggestion-value="suggestion => suggestion.item.name"
+        v-model="positionQuery"
+        @selected="autosuggestSelected"
+        class="autosuggest"
+        :input-props="{ class: 'autosuggest__input', disabled: saved }"
+        readonly
+      >
+        <template slot-scope="{ suggestion }">
+          <span class="my-suggestion-item">{{ suggestion.item.name }}</span>
+        </template>
+      </vue-autosuggest>
+      <div class="mt-2 text-danger text-sm" v-if="!$v.positionQuery.required && $v.positionQuery.$dirty">Required</div>
 
       <div class="text-xl mt-10">URL</div>
       <div class="w-full shadow mt-1 p-2">
@@ -33,12 +43,13 @@
         <v-button varient="secondary" class="text-sm flex-1" v-clipboard:copy="url">Copy</v-button>
         <v-button varient="secondary" class="text-sm ml-2">
           <i class="fas fa-paper-plane"></i>
-          <font-awesome-icon @click="handleClick" icon="paper-plane"></font-awesome-icon>
+          <font-awesome-icon icon="paper-plane"></font-awesome-icon>
         </v-button>
       </div>
 
       <div class="mt-12 px-4 text-center">
-        <v-button class="w-full text-xl" @click="save">Save to wishlist</v-button>
+        <v-button v-if="saved" class="w-full text-base" @click="openWebApp">View Saved Jobs</v-button>
+        <v-button v-else class="w-full text-xl" @click="save">Save to wishlist</v-button>
       </div>
       <div class="text-center mt-4"><anchor @click="openWebApp">couchtocareer.com</anchor></div>
     </template>
@@ -48,7 +59,8 @@
 <script>
 import cheerio from 'cheerio';
 import axios from 'axios';
-import VueSelect from 'vue-select';
+import { VueAutosuggest } from 'vue-autosuggest';
+
 import Loading from 'vue-loading-overlay';
 import { validationMixin } from 'vuelidate';
 import { required } from 'vuelidate/lib/validators';
@@ -57,6 +69,7 @@ import Anchor from '../../components/Anchor';
 import EllipsisCard from '../../components/EllipsisCard';
 import RiseLoader from 'vue-spinner/src/RiseLoader';
 import { API_URL, WEB_APP_URL } from '../../constants';
+import _ from 'lodash';
 
 export default {
   mixins: [validationMixin],
@@ -66,7 +79,7 @@ export default {
     VButton,
     Anchor,
     EllipsisCard,
-    VueSelect,
+    VueAutosuggest,
   },
   data() {
     return {
@@ -79,14 +92,31 @@ export default {
       descriptionHtml: '',
       url: '',
       position: null,
+      positionQuery: '',
       positions: [],
       loading: true,
       saving: false,
+      saved: false,
     };
   },
   validations: {
-    position: {
+    positionQuery: {
       required,
+    },
+  },
+  computed: {
+    filteredPositions() {
+      if (!this.positionQuery) {
+        return [];
+      }
+      return this.positions.filter(position => position.name.toLowerCase().includes(this.positionQuery.toLowerCase()));
+    },
+  },
+  watch: {
+    positionQuery(newVal) {
+      if (this.position.name !== newVal) {
+        this.position = null;
+      }
     },
   },
   created() {
@@ -102,46 +132,42 @@ export default {
         const $ = await cheerio.load(html);
 
         if (this.url.includes('indeed.com')) {
-          this.title = $('#vjs-jobtitle').text();
-          this.company = $('#vjs-cn').text();
-          this.location = $('#vjs-loc')
-            .text()
-            .replace(' - ', '');
-          this.logo = $('.vjs-JobInfoHeader-logo').attr('src');
-          this.description = $('#vjs-desc').text();
-          this.descriptionHtml = $('#vjs-desc').html();
+          this.scrapeIndeed($);
         } else if (this.url.includes('angel.co')) {
-          this.title = $('.header_ad038 h4').text();
-          this.company = $('.header_ad038 span').text();
-          this.location = $('.location_a70ea')
-            .first()
-            .text();
-          this.logo = $('.header_ad038 img').attr('src');
-          this.description = $('.description_3469f').text();
-          this.descriptionHtml = $('.description_3469f').html();
+          this.scrapeAngelList($);
         } else if (this.url.includes('linkedin.com')) {
-          this.title = $('.jobs-details-top-card__job-title').text();
-          this.company = $('.jobs-details-top-card__company-url').text();
-          this.location = $('.jobs-details-top-card__exact-location').text();
-          this.logo = $('.jobs-details-top-card__company-logo').attr('src');
-          this.description = $('.jobs-box__html-content').text();
-          this.descriptionHtml = $('.jobs-box__html-content').html();
+          this.scrapeLinkedin($);
         }
 
         try {
-          const [{ data: keywords }, { data: positions }] = await Promise.all([
+          const [{ data: keywords }, { data: positions }, { data: jobs }] = await Promise.all([
             axios.post(`${API_URL}/algorithm/keyword-extractor`, { text: `${this.title}, ${this.description}` }),
             axios.get(`${API_URL}/positions/`),
+            axios.get(`${API_URL}/jobs/`, { params: { url: this.url } }),
           ]);
           this.keywords = keywords.join(', ');
-          this.positions = positions;
+          this.positions = _.sortBy(
+            positions.map(position => _.omit(position, ['jobs'])),
+            'order'
+          );
+          if (jobs.length) {
+            this.saved = true;
+            this.positionQuery = _.find(positions, { id: jobs[0].position }).name;
+          }
           this.loading = false;
         } catch (e) {}
       });
     });
   },
   methods: {
+    autosuggestSelected(suggestion) {
+      this.position = suggestion.item;
+    },
     async save() {
+      if (this.position) {
+        this.positionQuery = this.position.name;
+      }
+
       this.$v.$touch();
       if (this.$v.$invalid) {
         return;
@@ -150,6 +176,12 @@ export default {
       this.saving = true;
       try {
         await new Promise(resolve => setTimeout(resolve, 1500));
+        if (!this.position) {
+          const { data: position } = await axios.post(`${API_URL}/positions/`, { name: this.positionQuery });
+          this.position = position;
+          const { data: positions } = await axios.get(`${API_URL}/positions/`);
+          this.positions = positions;
+        }
         await axios.post(`${API_URL}/jobs/`, {
           title: this.title,
           company: this.company,
@@ -159,29 +191,75 @@ export default {
           description_html: this.descriptionHtml,
           keywords: this.keywords,
           position: this.position.id,
+          url: this.url,
         });
-      } catch (e) {
-        console.log(e);
-      }
+        this.saved = true;
+      } catch (e) {}
       this.saving = false;
     },
     openWebApp() {
       chrome.tabs.create({ url: WEB_APP_URL });
+    },
+    scrapeIndeed($) {
+      this.title = $('#vjs-jobtitle').text();
+      this.company = $('#vjs-cn').text();
+      this.location = $('#vjs-loc')
+        .text()
+        .replace(' - ', '');
+      this.logo = $('.vjs-JobInfoHeader-logo').attr('src');
+      this.description = $('#vjs-desc').text();
+      this.descriptionHtml = $('#vjs-desc').html();
+    },
+    scrapeAngelList($) {
+      this.title = $('.header_ad038 h4').text();
+      this.company = $('.header_ad038 span').text();
+      this.location = $('.location_a70ea')
+        .first()
+        .text();
+      this.logo = $('.header_ad038 img').attr('src');
+      this.description = $('.description_3469f').text();
+      this.descriptionHtml = $('.description_3469f').html();
+    },
+    scrapeLinkedin($) {
+      this.title = $('.jobs-details-top-card__job-title').text();
+      this.company = $('.jobs-details-top-card__company-url').text();
+      this.location = $('.jobs-details-top-card__exact-location').text();
+      this.logo = $('.jobs-details-top-card__company-logo').attr('src');
+      this.description = $('.jobs-box__html-content').text();
+      this.descriptionHtml = $('.jobs-box__html-content').html();
     },
   },
 };
 </script>
 
 <style lang="scss">
-.vs__dropdown-toggle,
-.vs__dropdown-menu {
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16);
-  border: none !important;
-  color: #707070 !important;
-  font-size: 0.875rem !important;
-}
+.autosuggest {
+  &__input {
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16);
+    color: #707070;
+    font-size: 0.875rem;
+    padding: 6px 12px;
+    width: 100%;
 
-.vs__selected {
-  color: #707070 !important;
+    &:focus {
+      outline: none;
+    }
+
+    &:disabled {
+      background: white !important;
+    }
+  }
+
+  &__results {
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16);
+    color: #707070;
+    font-size: 0.875rem;
+    padding: 8px 12px;
+    margin-top: 8px;
+    cursor: pointer;
+    position: absolute;
+    background-color: white;
+    width: 100%;
+  }
 }
 </style>
