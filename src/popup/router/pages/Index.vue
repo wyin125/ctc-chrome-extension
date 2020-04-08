@@ -141,7 +141,7 @@ export default {
 
         try {
           const [{ data: keywords }, { data: positions }, { data: jobs }] = await Promise.all([
-            axios.post(`${API_URL}/algorithm/keyword-extractor`, { text: `${this.title}, ${this.description}` }),
+            axios.post(`${API_URL}/jobs/keyword_extract/`, { text: `${this.title}, ${this.description}` }),
             axios.get(`${API_URL}/positions/`),
             axios.get(`${API_URL}/jobs/`, { params: { url: this.url } }),
           ]);
