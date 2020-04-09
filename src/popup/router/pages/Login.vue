@@ -67,7 +67,7 @@ export default {
       this.error = '';
       try {
         await new Promise(resolve => setTimeout(resolve, 1500));
-        const { data } = await axios.post(`${API_URL}/authentication/login`, { email: this.email, password: this.password });
+        const { data } = await axios.post(`${API_URL}/accounts/login`, { email: this.email, password: this.password });
 
         localStorage.setItem('token', data.token);
         localStorage.setItem('id', data.user.id);
