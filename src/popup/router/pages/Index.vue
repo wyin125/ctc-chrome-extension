@@ -69,6 +69,7 @@ import Anchor from '../../components/Anchor';
 import EllipsisCard from '../../components/EllipsisCard';
 import RiseLoader from 'vue-spinner/src/RiseLoader';
 import { API_URL, WEB_APP_URL } from '../../constants';
+import htmlToFormattedText from 'html-to-formatted-text';
 import _ from 'lodash';
 
 export default {
@@ -89,7 +90,6 @@ export default {
       logo: '',
       keywords: '',
       description: '',
-      descriptionHtml: '',
       url: '',
       position: null,
       positionQuery: '',
@@ -188,7 +188,6 @@ export default {
           location: this.location,
           logo: this.logo,
           description: this.description,
-          description_html: this.descriptionHtml,
           keywords: this.keywords,
           position: this.position.id,
           url: this.url,
@@ -207,8 +206,7 @@ export default {
         .text()
         .replace(' - ', '');
       this.logo = $('.vjs-JobInfoHeader-logo').attr('src');
-      this.description = $('#vjs-desc').text();
-      this.descriptionHtml = $('#vjs-desc').html();
+      this.description = htmlToFormattedText($('#vjs-desc').html());
     },
     scrapeAngelList($) {
       this.title = $('.header_ad038 h4').text();
@@ -217,16 +215,14 @@ export default {
         .first()
         .text();
       this.logo = $('.header_ad038 img').attr('src');
-      this.description = $('.description_3469f').text();
-      this.descriptionHtml = $('.description_3469f').html();
+      this.description = htmlToFormattedText($('.description_3469f').text());
     },
     scrapeLinkedin($) {
       this.title = $('.jobs-details-top-card__job-title').text();
       this.company = $('.jobs-details-top-card__company-url').text();
       this.location = $('.jobs-details-top-card__exact-location').text();
       this.logo = $('.jobs-details-top-card__company-logo').attr('src');
-      this.description = $('.jobs-box__html-content').text();
-      this.descriptionHtml = $('.jobs-box__html-content').html();
+      this.description = htmlToFormattedText($('.jobs-box__html-content').text());
     },
   },
 };
