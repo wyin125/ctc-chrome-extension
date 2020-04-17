@@ -129,7 +129,7 @@ export default {
       this.url = tabs[0].url;
 
       chrome.tabs.sendMessage(tabs[0].id, 'getHtml', async html => {
-        const $ = await cheerio.load(html);
+        const $ = await cheerio.load(html, { decodeEntities: false });
 
         if (this.url.includes('indeed.com')) {
           this.scrapeIndeed($);
@@ -215,14 +215,14 @@ export default {
         .first()
         .text();
       this.logo = $('.header_ad038 img').attr('src');
-      this.description = htmlToFormattedText($('.description_3469f').text());
+      this.description = htmlToFormattedText($('.description_3469f').html());
     },
     scrapeLinkedin($) {
       this.title = $('.jobs-details-top-card__job-title').text();
       this.company = $('.jobs-details-top-card__company-url').text();
       this.location = $('.jobs-details-top-card__exact-location').text();
       this.logo = $('.jobs-details-top-card__company-logo').attr('src');
-      this.description = htmlToFormattedText($('.jobs-box__html-content').text());
+      this.description = htmlToFormattedText($('.jobs-box__html-content').html());
     },
   },
 };
