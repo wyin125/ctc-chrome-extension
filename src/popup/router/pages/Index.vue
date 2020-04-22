@@ -141,7 +141,7 @@ export default {
 
         try {
           const [{ data: keywords }, { data: positions }, { data: jobs }] = await Promise.all([
-            axios.post(`${API_URL}/jobs/keyword_extract/`, { text: `${this.title}, ${this.description}` }),
+            axios.post(`${API_URL}/jobs/keyword_extract/`, { text: this.description }),
             axios.get(`${API_URL}/positions/`),
             axios.get(`${API_URL}/jobs/`, { params: { url: this.url } }),
           ]);
@@ -175,7 +175,6 @@ export default {
 
       this.saving = true;
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
         if (!this.position) {
           const { data: position } = await axios.post(`${API_URL}/positions/`, { name: this.positionQuery });
           this.position = position;
