@@ -187,7 +187,6 @@ export default {
           location: this.location,
           logo: this.logo,
           description: this.description,
-          keywords: this.keywords,
           position: this.position.id,
           url: this.url,
         });
