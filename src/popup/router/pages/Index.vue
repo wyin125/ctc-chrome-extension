@@ -114,7 +114,7 @@ export default {
   },
   watch: {
     positionQuery(newVal) {
-      if (this.position.name !== newVal) {
+      if (this.position && this.position.name !== newVal) {
         this.position = null;
       }
     },
@@ -203,7 +203,7 @@ export default {
       this.location = $('#vjs-loc')
         .text()
         .replace(' - ', '');
-      this.logo = $('.vjs-JobInfoHeader-logo').attr('src');
+      this.logo = $('#vjs-img-cmL').attr('src') || $('.vjs-JobInfoHeader-logo').attr('src');
       this.description = htmlToFormattedText($('#vjs-desc').html());
     },
     scrapeAngelList($) {
