@@ -140,20 +140,20 @@ export default {
         }
 
         try {
-          // const [{ data: keywords }, { data: positions }, { data: jobs }] = await Promise.all([
-          //   axios.post(`${API_URL}/jobs/keyword_extract/`, { text: this.description }),
-          //   axios.get(`${API_URL}/positions/`),
-          //   axios.get(`${API_URL}/jobs/`, { params: { url: this.url } }),
-          // ]);
-          // this.keywords = keywords.join(', ');
-          // this.positions = _.sortBy(
-          //   positions.map(position => _.omit(position, ['jobs'])),
-          //   'order'
-          // );
-          // if (jobs.length) {
-          //   this.saved = true;
-          //   this.positionQuery = _.find(positions, { id: jobs[0].position }).name;
-          // }
+          const [{ data: keywords }, { data: positions }, { data: jobs }] = await Promise.all([
+            axios.post(`${API_URL}/jobs/keyword_extract/`, { text: this.description }),
+            axios.get(`${API_URL}/positions/`),
+            axios.get(`${API_URL}/jobs/`, { params: { url: this.url } }),
+          ]);
+          this.keywords = keywords.join(', ');
+          this.positions = _.sortBy(
+            positions.map(position => _.omit(position, ['jobs'])),
+            'order'
+          );
+          if (jobs.length) {
+            this.saved = true;
+            this.positionQuery = _.find(positions, { id: jobs[0].position }).name;
+          }
           this.loading = false;
         } catch (e) {}
       });
