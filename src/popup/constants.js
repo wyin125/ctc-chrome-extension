@@ -1,2 +1,2 @@
-export const API_URL = 'http://127.0.0.1:8000'; // 'http://127.0.0.1:8000'; 'https://fathomless-atoll-80551.herokuapp.com';
-export const WEB_APP_URL = 'http://localhost:3000'; //'http://localhost:3000'; 'https://ctc-web-app-384nydv44.now.sh';
+export const API_URL = 'https://secret-earth-00275.herokuapp.com'; //'http://127.0.0.1:8000';
+export const WEB_APP_URL = 'https://ctc-web-app.now.sh/'; //'http://localhost:3000';
