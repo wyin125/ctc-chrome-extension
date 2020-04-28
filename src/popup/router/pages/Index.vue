@@ -133,27 +133,27 @@ export default {
 
         if (this.url.includes('indeed.com')) {
           this.scrapeIndeed($);
-        } else if (this.url.includes('angel.co')) {
-          this.scrapeAngelList($);
+        } else if (this.url.includes('glassdoor.com')) {
+          this.scrapeGlassdoor($);
         } else if (this.url.includes('linkedin.com')) {
           this.scrapeLinkedin($);
         }
 
         try {
-          const [{ data: keywords }, { data: positions }, { data: jobs }] = await Promise.all([
-            axios.post(`${API_URL}/jobs/keyword_extract/`, { text: this.description }),
-            axios.get(`${API_URL}/positions/`),
-            axios.get(`${API_URL}/jobs/`, { params: { url: this.url } }),
-          ]);
-          this.keywords = keywords.join(', ');
-          this.positions = _.sortBy(
-            positions.map(position => _.omit(position, ['jobs'])),
-            'order'
-          );
-          if (jobs.length) {
-            this.saved = true;
-            this.positionQuery = _.find(positions, { id: jobs[0].position }).name;
-          }
+          // const [{ data: keywords }, { data: positions }, { data: jobs }] = await Promise.all([
+          //   axios.post(`${API_URL}/jobs/keyword_extract/`, { text: this.description }),
+          //   axios.get(`${API_URL}/positions/`),
+          //   axios.get(`${API_URL}/jobs/`, { params: { url: this.url } }),
+          // ]);
+          // this.keywords = keywords.join(', ');
+          // this.positions = _.sortBy(
+          //   positions.map(position => _.omit(position, ['jobs'])),
+          //   'order'
+          // );
+          // if (jobs.length) {
+          //   this.saved = true;
+          //   this.positionQuery = _.find(positions, { id: jobs[0].position }).name;
+          // }
           this.loading = false;
         } catch (e) {}
       });
@@ -206,20 +206,30 @@ export default {
       this.logo = $('#vjs-img-cmL').attr('src') || $('.vjs-JobInfoHeader-logo').attr('src');
       this.description = htmlToFormattedText($('#vjs-desc').html());
     },
-    scrapeAngelList($) {
-      this.title = $('.header_ad038 h4').text();
-      this.company = $('.header_ad038 span').text();
-      this.location = $('.location_a70ea')
+    scrapeGlassdoor($) {
+      this.title = $('.empInfo > .title')
         .first()
         .text();
-      this.logo = $('.header_ad038 img').attr('src');
-      this.description = htmlToFormattedText($('.description_3469f').html());
+      this.company = $('.empInfo .employerName')
+        .first()
+        .clone()
+        .children()
+        .remove()
+        .end()
+        .text();
+      this.location = $('.empInfo  .location').text();
+      this.logo = $('.gdGrid.selected .sqLogo img').attr('src');
+      this.description = htmlToFormattedText($('.jobDescriptionContent').html());
     },
     scrapeLinkedin($) {
-      this.title = $('.jobs-details-top-card__job-title').text();
-      this.company = $('.jobs-details-top-card__company-url').text();
-      this.location = $('.jobs-details-top-card__exact-location').text();
-      this.logo = $('.jobs-details-top-card__company-logo').attr('src');
+      this.title = $('.jobs-details-top-card__job-title').text() || $('.jobs-top-card__job-title').text();
+      this.company = $('.jobs-details-top-card__company-url').text() || $('.jobs-top-card__company-url').text();
+      this.location =
+        $('.jobs-details-top-card__exact-location').text() ||
+        $('.jobs-top-card__bullet')
+          .first()
+          .text();
+      this.logo = $('.jobs-details-top-card__company-logo').attr('src') || $('.jobs-top-card__company-logo').attr('src');
       this.description = htmlToFormattedText($('.jobs-box__html-content').html());
     },
   },
